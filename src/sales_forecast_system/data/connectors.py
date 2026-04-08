@@ -10,6 +10,7 @@ import requests
 
 @dataclass
 class InternalCSVConnector:
+    """内部数据接入：从本地 CSV 读取销售明细。"""
     file_path: Path
 
     def load(self) -> pd.DataFrame:
@@ -21,6 +22,7 @@ class InternalCSVConnector:
 
 @dataclass
 class InternalAPIConnector:
+    """内部数据接入：从公司内部服务拉取销售数据。"""
     base_url: str
     timeout: int = 30
 
@@ -36,6 +38,7 @@ class InternalAPIConnector:
 
 @dataclass
 class ExternalAPIConnector:
+    """外部数据接入：拉取天气、节假日、活动热度等外生变量。"""
     base_url: str
     api_key: str | None = None
     timeout: int = 30
@@ -59,11 +62,13 @@ class DataIntegrator:
         self.date_col = date_col
 
     def merge(self, internal_df: pd.DataFrame, external_df: pd.DataFrame | None = None) -> pd.DataFrame:
+        # 统一时间字段类型，避免 merge 时出现字符串/时间类型不一致。
         df = internal_df.copy()
         df[self.date_col] = pd.to_datetime(df[self.date_col])
         if external_df is None or external_df.empty:
             return df.sort_values(self.date_col).reset_index(drop=True)
 
+        # 外部数据按时间左连接到内部销售数据，保证销售记录不丢失。
         ext = external_df.copy()
         ext[self.date_col] = pd.to_datetime(ext[self.date_col])
         merged = df.merge(ext, on=self.date_col, how="left")

@@ -9,6 +9,7 @@ import streamlit as st
 st.set_page_config(page_title="Sales Forecast Dashboard", layout="wide")
 st.title("销售预测可视化看板")
 
+# 支持用户在侧边栏指定预测结果与指标文件路径。
 pred_file = st.sidebar.text_input("预测结果文件", value="artifacts/predictions.csv")
 metric_file = st.sidebar.text_input("指标文件", value="artifacts/metrics.json")
 
@@ -16,11 +17,13 @@ pred_path = Path(pred_file)
 metric_path = Path(metric_file)
 
 if pred_path.exists():
+    # 展示样例明细，便于快速检查数据是否正确产出。
     df = pd.read_csv(pred_path)
     st.subheader("预测结果总览")
     st.dataframe(df.head(30), use_container_width=True)
 
     if {"date", "item_id", "sales", "prediction"}.issubset(df.columns):
+        # 支持按商品维度查看真实值与预测值走势。
         item_options = sorted(df["item_id"].astype(str).unique())
         selected_item = st.selectbox("选择商品", item_options)
         item_df = df[df["item_id"].astype(str) == selected_item].copy()

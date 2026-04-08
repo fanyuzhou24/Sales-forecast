@@ -13,6 +13,7 @@ from ..modeling.registry import ModelRegistry
 
 
 def build_engine(model_dir: Path) -> ForecastEngine:
+    """构建可复用引擎实例。"""
     cfg = load_config()
     feature_engineer = FeatureEngineer(
         date_col=cfg.feature.date_col,
@@ -31,6 +32,7 @@ def run_pipeline(
     model_name: str = "random_forest",
     external_api_url: str | None = None,
 ) -> dict:
+    """执行端到端流程：读取数据 -> 融合 -> 训练 -> 预测 -> 落盘结果。"""
     output_dir.mkdir(parents=True, exist_ok=True)
     internal_df = InternalCSVConnector(train_data).load()
 
@@ -59,6 +61,7 @@ def run_pipeline(
 
 
 def main() -> None:
+    """CLI 入口。"""
     parser = argparse.ArgumentParser(description="Sales Forecast Pipeline Runner")
     parser.add_argument("--train-data", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, default=Path("artifacts"))

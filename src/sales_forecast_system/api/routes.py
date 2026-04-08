@@ -21,6 +21,7 @@ def health() -> dict:
 
 @router.post("/train")
 def train_model(req: TrainRequest) -> dict:
+    # 训练接口：由客户端传入训练数据路径与模型参数。
     data_path = Path(req.train_data_path)
     if not data_path.exists():
         raise HTTPException(status_code=404, detail=f"训练数据不存在: {data_path}")
@@ -36,6 +37,7 @@ def train_model(req: TrainRequest) -> dict:
 
 @router.post("/predict")
 def predict(req: PredictRequest) -> list[dict]:
+    # 推理接口：读取批量数据并返回逐行预测结果。
     data_path = Path(req.data_path)
     if not data_path.exists():
         raise HTTPException(status_code=404, detail=f"待预测数据不存在: {data_path}")
