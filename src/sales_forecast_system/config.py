@@ -1,26 +1,35 @@
+from __future__ import annotations
+
+from pathlib import Path
 from pydantic import BaseModel, Field
 
 
-class DatabaseConfig(BaseModel):
-    driver: str = Field(default="sqlite")
-    dsn: str = Field(default="sqlite:///sales.db")
-    pool_size: int = Field(default=5)
+class DataSourceConfig(BaseModel):
+    internal_csv_path: Path | None = None
+    internal_api_url: str | None = None
+    external_api_url: str | None = None
+    external_api_key: str | None = None
 
 
-class ForecastConfig(BaseModel):
-    horizon_days: int = Field(default=30)
-    seasonality_period: int = Field(default=7)
-    moving_average_window: int = Field(default=14)
-    enable_ensemble: bool = Field(default=True)
+class FeatureConfig(BaseModel):
+    lags: tuple[int, ...] = (1, 7, 14)
+    rolling_windows: tuple[int, ...] = (7, 14, 28)
+    target_col: str = "sales"
+    date_col: str = "date"
+    item_col: str = "item_id"
+
+
+class ModelConfig(BaseModel):
+    default_model_name: str = "random_forest"
+    random_state: int = 42
 
 
 class AppConfig(BaseModel):
-    env: str = Field(default="dev")
-    host: str = Field(default="0.0.0.0")
-    port: int = Field(default=8080)
-    debug: bool = Field(default=True)
-    database: DatabaseConfig = Field(default_factory=DatabaseConfig)
-    forecast: ForecastConfig = Field(default_factory=ForecastConfig)
+    project_name: str = "Sales Forecast System"
+    model_dir: Path = Field(default=Path("artifacts/models"))
+    data: DataSourceConfig = Field(default_factory=DataSourceConfig)
+    feature: FeatureConfig = Field(default_factory=FeatureConfig)
+    model: ModelConfig = Field(default_factory=ModelConfig)
 
 
 def load_config() -> AppConfig:

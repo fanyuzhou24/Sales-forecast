@@ -1,14 +1,23 @@
 [project]
 name = "sales-forecast-system"
-version = "0.1.0"
-description = "Comprehensive sales forecasting system"
+version = "0.2.0"
+description = "Production-oriented sales forecasting system"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.110.0",
-    "pydantic>=2.6.0",
-    "uvicorn>=0.27.0",
+    "uvicorn>=0.30.0",
+    "pydantic>=2.8.0",
+    "pandas>=2.2.0",
     "numpy>=1.26.0",
+    "scikit-learn>=1.5.0",
+    "joblib>=1.4.0",
+    "requests>=2.32.0",
+    "plotly>=5.22.0",
+    "streamlit>=1.37.0"
 ]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.2.0"]
 
 [build-system]
 requires = ["setuptools>=68"]
